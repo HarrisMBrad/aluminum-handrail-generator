@@ -1,0 +1,69 @@
+================================================================================
+PROJECT CUT LIST & ROBOTIC TUBE LASER / CUT CELL INSTRUCTIONS
+PROJECT NAME: Aluminum Handrail Frame (1/8" Wall Tubing)
+UNITS: Imperial (Inches) / Standard English
+================================================================================
+
+1. MATERIAL REQUISITION & CUT LIST
+--------------------------------------------------------------------------------
+ITEM # | QTY | MATERIAL SPECIFICATION         | CUT LENGTH | MITER L | MITER R
+--------------------------------------------------------------------------------
+01     | 1   | 3" x 2" x 0.125" Rect. Tube    | 105.000"   | 90.0°   | 90.0°
+       |     | (6061-T6 Aluminum Handrail Cap)|            |         |
+02     | 3   | 3" x 3" x 0.125" Square Tube   | 40.000"    | 90.0°   | 90.0°
+       |     | (6061-T6 Aluminum Posts)       |            |         |
+03     | 6   | 1.5" x 1.5" x 0.125" Sq. Tube  | 34.000"    | 90.0°   | 90.0°
+       |     | (6063-T5 Aluminum Pickets)     |            |         |
+04     | 3   | 3/8" x 8" x 8" Aluminum Plate  | 8.0" x 8.0"| Square  | Square
+       |     | (6061-T6 Base Plates)          |            |         |
+--------------------------------------------------------------------------------
+
+2. ROBOTIC / AUTOMATED CNC CUTTING STEP-BY-STEP SEQUENCE
+--------------------------------------------------------------------------------
+[PROGRAM HEADER]
+  - Workpiece Zero: Stock End Face (X=0.000, Y=0.000, Z=0.000)
+  - Cutting Medium: Fiber Tube Laser or Automated Cold Saw + Drill Station
+  - Material Family: Aluminum (Shielding Gas: Nitrogen / Compressed Air)
+
+--- JOB STEP 01: TOP HANDRAIL CAP (ITEM 01) ---
+  Step 1.1: Load 3" x 2" x 0.125" Rectangular Aluminum Tube into chuck.
+  Step 1.2: Run optical seam-search to align 3.0" face to top Z-plane.
+  Step 1.3: Cut raw stock lead-in edge at 90.0° (X=0.000").
+  Step 1.4: Execute hole pattern on top 3.0" face (Centerline Y=1.500"):
+            * Drill 9x through-holes @ 13/32" (0.406") diameter.
+            * Drill spacing: First hole @ X=9.000" from lead end, then repeat
+              every 12.000" On-Center (O.C.) along the X-axis.
+            * Form 82° countersink tool-pass on each hole to 0.207" depth.
+  Step 1.5: Advance tube to X=105.000" and perform 90.0° straight cut-off.
+  Step 1.6: Robotic arm unloads Item 01 to Rack A (Handrail Cap).
+
+--- JOB STEP 02: UPRIGHT POSTS (ITEM 02) ---
+  Step 2.1: Load 3" x 3" x 0.125" Square Aluminum Tube into chuck.
+  Step 2.2: Perform lead-in trim cut at 90.0° (X=0.000").
+  Step 2.3: Loop Count = 3 Cycles:
+            a. Feed stock to X=40.000".
+            b. Perform 90.0° straight cut-off.
+            c. Robotic arm unloads component to Rack B (Posts).
+
+--- JOB STEP 03: VERTICAL PICKETS (ITEM 03) ---
+  Step 3.1: Load 1.5" x 1.5" x 0.125" Square Aluminum Tube into chuck.
+  Step 3.2: Perform lead-in trim cut at 90.0° (X=0.000").
+  Step 3.3: Loop Count = 6 Cycles:
+            a. Feed stock to X=34.000".
+            b. Perform 90.0° straight cut-off.
+            c. Robotic arm unloads component to Rack C (Pickets).
+
+--- JOB STEP 04: BASE PLATES (ITEM 04) ---
+  Step 4.1: Load 3/8" x 8.0" 6061-T6 Flat Bar / Sheet Stock into CNC bed.
+  Step 4.2: Piercing Pass: Pierce 4x 0.500" (1/2") Anchor Bolt Clearance Holes 
+            at coordinates (1.0", 1.0"), (7.0", 1.0"), (1.0", 7.0"), (7.0", 7.0").
+  Step 4.3: Cut outer perimeter profile 8.000" x 8.000" square.
+  Step 4.4: Repeat 3 Cycles. Unload to Rack D (Base Plates).
+
+--------------------------------------------------------------------------------
+3. FABRICATION & DEBURRING NOTES
+--------------------------------------------------------------------------------
+  * Deburr all cut tube edges inside/outside before sending to welding fit-up.
+  * Keep tube interiors clean of cutting fluid or metal chips for clean MIG welds.
+  * Verify 1/8" wall tube alignment with Base Plate centerlines prior to tacking.
+================================================================================

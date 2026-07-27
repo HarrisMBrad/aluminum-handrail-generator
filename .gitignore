@@ -1,4 +1,14 @@
+# FreeCAD Backup and Lock Files
 *.FCStd1
 *.FCStd2
 *.lock
+
+# Python Cache
 __pycache__/
+*.pyc
+
+# OS & Editor Metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
