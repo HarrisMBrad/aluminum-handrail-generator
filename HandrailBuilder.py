@@ -7,7 +7,7 @@ import sys
 def build_handrail_macro():
     """
     Parametric Aluminum Handrail Builder for FreeCAD 1.1.1
-    Generates 3D CAD Geometry, Welding Procedure Specs (WPS), and Robotic Cut Lists.
+    Generates 3D Geometry, AWS D1.2 WPS Specs, STEP 3D Assembly, and Base Plate Exports.
     """
     doc_name = "Aluminum_Handrail_Frame"
     if doc_name in App.listDocuments():
@@ -51,6 +51,9 @@ def build_handrail_macro():
     plate_w, plate_l = PLATE_W_IN * INCH, PLATE_L_IN * INCH
     plate_thick = PLATE_THICK_IN * INCH
 
+    all_objects = []
+    first_plate = None
+
     # Base Plates & Upright Posts
     for i in range(NUM_BAYS):
         y_pos = i * bay_spacing
@@ -68,11 +71,15 @@ def build_handrail_macro():
             base_box = base_box.cut(Part.makeCylinder(0.25 * INCH, plate_thick + 10.0, App.Vector(hx, hy, -5.0), App.Vector(0, 0, 1)))
         plate_obj = doc.addObject("Part::Feature", f"Alum_Base_Plate_{i+1}")
         plate_obj.Shape = base_box
+        all_objects.append(plate_obj)
+        if i == 0:
+            first_plate = plate_obj
 
         # Upright Post (3" x 3" x 1/8" Tube)
         post = doc.addObject("Part::Box", f"Alum_Post_3x3_{i+1}")
         post.Length, post.Width, post.Height = post_w, post_l, post_cut_length_in * INCH
         post.Placement = App.Placement(App.Vector(0, y_pos, plate_thick), App.Rotation(0, 0, 0))
+        all_objects.append(post)
 
     # Top Cap with 12" O.C. Countersunk Holes
     handrail_x, handrail_y = (post_w - top_w) / 2.0, -OVERHANG_IN * INCH
@@ -88,6 +95,7 @@ def build_handrail_macro():
 
     cap_obj = doc.addObject("Part::Feature", "Top_Handrail_Cap")
     cap_obj.Shape = cap_shape
+    all_objects.append(cap_obj)
 
     # Vertical Pickets (1.5" x 1.5" x 1/8" Tubing)
     for i in range(NUM_BAYS - 1):
@@ -98,18 +106,84 @@ def build_handrail_macro():
             picket = doc.addObject("Part::Box", f"Picket_Bay_{i+1}_P{p}")
             picket.Length, picket.Width, picket.Height = picket_w, picket_l, picket_cut_length_in * INCH
             picket.Placement = App.Placement(App.Vector((post_w - picket_w) / 2.0, p_y, plate_thick + (TOE_GAP_IN * INCH)), App.Rotation(0, 0, 0))
+            all_objects.append(picket)
 
-    # Save directly to repo exports folder
+    # =========================================================
+    # 2. OUTPUT EXPORTS & FILE SAVING
+    # =========================================================
     target_repo = r"C:\Users\bmich\Documents\L\templates\aluminum-handrail-generator"
     exports_dir = os.path.join(target_repo, "exports")
     os.makedirs(exports_dir, exist_ok=True)
 
     doc.recompute()
 
+    # 2a. Save Native .FCStd
     fcstd_path = os.path.join(exports_dir, "Aluminum_Handrail_Frame.FCStd")
     doc.saveAs(fcstd_path)
 
-    App.Console.PrintMessage(f"\n[SUCCESS] Model generated and saved to:\n{fcstd_path}\n\n")
+    # 2b. Save STEP 3D Assembly
+    step_path = os.path.join(exports_dir, "Aluminum_Handrail_Frame.step")
+    Part.export(all_objects, step_path)
+
+    # 2c. Save Base Plate (Tries DXF, falls back safely to STEP)
+    dxf_path = os.path.join(exports_dir, "Base_Plate_Flat_Pattern.dxf")
+    if first_plate:
+        exported = False
+        try:
+            import importDXF
+            importDXF.export([first_plate], dxf_path)
+            exported = True
+        except Exception:
+            pass
+
+        if not exported:
+            try:
+                import Draft
+                Draft.export([first_plate], dxf_path)
+                exported = True
+            except Exception:
+                pass
+
+        if not exported:
+            dxf_path = os.path.join(exports_dir, "Base_Plate_Flat_Pattern.step")
+            Part.export([first_plate], dxf_path)
+
+    # =========================================================
+    # 3. AWS D1.2 WELDING PROCEDURE SPECIFICATION (WPS) CONSOLE
+    # =========================================================
+    wps_report = f"""
+======================================================================
+  AWS D1.2 / D1.2M STRUCTURAL WELDING CODE - ALUMINUM (WPS SUMMARY)
+======================================================================
+  Project Name:   Parametric Aluminum Handrail Frame ({NUM_BAYS} Bays)
+  Base Metals:    6061-T6 Tube (0.125") to 6061-T6 Base Plate (0.375")
+  Standard:       AWS D1.2 / D1.2M Structural Aluminum
+----------------------------------------------------------------------
+  GMAW (MIG) PROCESS PARAMETERS
+  • Process Type:  GMAW (Pulsed-Spray Transfer / DCEP)
+  • Filler Wire:   AWS A5.10 ER5356 (0.035" / 0.9 mm)
+  • Shielding Gas: 100% Argon @ 25 - 30 CFH
+  • Arc Voltage:   19.5 V - 21.5 V
+  • Wire Speed:    350 - 420 IPM
+  • Amperage:      110 A - 140 A
+----------------------------------------------------------------------
+  JOINT PREPARATION & PROCEDURES
+  • Joint Type:    Corner Fillet & Socket Weld (1/8" min leg size)
+  • Prep Method:   Solvent degrease (acetone) + dedicated stainless 
+                   wire brush within 4 hours prior to arc-start.
+  • Interpass Temp: Max 250°F (121°C) to prevent T6 strength loss.
+======================================================================
+  [EXPORTS GENERATED SUCCESSFULLY]
+  1. FCStd Model: {fcstd_path}
+  2. STEP Assembly: {step_path}
+  3. Base Plate Export: {dxf_path}
+======================================================================
+"""
+    # Print directly to Python Console stdout
+    print(wps_report)
+    
+    # Also send to FreeCAD Report View
+    App.Console.PrintMessage(wps_report)
 
     if Gui.getMainWindow():
         Gui.SendMsgToActiveView("ViewFit")
