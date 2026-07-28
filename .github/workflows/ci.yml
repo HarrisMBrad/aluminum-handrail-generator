@@ -1,4 +1,4 @@
-name: CI - Fabrication & Inspection Pipeline
+name: CI Fabrication Pipeline
 
 on:
   push:
@@ -27,17 +27,14 @@ jobs:
 
     - name: Lint Python scripts with flake8
       run: |
-        # Stop build on syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # Soft errors warning check
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Verify Image Annotation Tool Execution
       run: |
-        # Ensure annotate_frame_corner.py runs cleanly cross-platform
         python annotate_frame_corner.py
 
-    - name: Run Pytest (if tests exist)
+    - name: Run Pytest
       run: |
         if [ -d "tests" ] || [ -f "test_*.py" ]; then
           pytest
