@@ -1,0 +1,42 @@
+name: CI - Dev Branch Pipeline
+
+on:
+  push:
+    branches: [ "dev-branch" ]
+  pull_request:
+    branches: [ "dev-branch" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install matplotlib pillow flake8 pytest
+
+    - name: Lint Python scripts with flake8
+      run: |
+        flake8 . --exclude=.venv,.git --count --select=E9,F63,F7,F82 --show-source --statistics
+
+    - name: Verify Image Annotation Tool Execution
+      run: |
+        python annotate_frame_corner.py
+
+    - name: Run Pytest
+      run: |
+        if [ -d "tests" ] || [ -f "test_*.py" ]; then
+          pytest
+        else
+          echo "No pytest files found, skipping unit test step."
+        fi
