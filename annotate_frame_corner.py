@@ -4,10 +4,11 @@ import matplotlib.patches as patches
 from PIL import Image
 
 # =========================================================
-# 1. PATH CONFIGURATION & FILE RESOLUTION
+# 1. PATH CONFIGURATION & FILE RESOLUTION (CROSS-PLATFORM)
 # =========================================================
-repo_dir = r"C:\Users\bmich\Documents\L\templates\aluminum-handrail-generator"
-image_filenames = ["1000006413.jpg", "handrail_corner_spec.jpg"]
+# Dynamically locate repository root regardless of OS environment
+repo_dir = os.path.dirname(os.path.abspath(__file__))
+image_filenames = ["handrail_corner.png", "handrail_corner.jpg", "image_3.png", "1000006413.jpg"]
 
 search_paths = []
 for fname in image_filenames:
@@ -25,8 +26,8 @@ for path in search_paths:
 
 if not input_image_path:
     raise FileNotFoundError(
-        f"Could not locate 1000006413.jpg or handrail_corner_spec.jpg in repo directory: {repo_dir}\n"
-        f"Please verify the image is placed in your repository folder."
+        f"Could not locate 'handrail_corner.png' in repository path: {repo_dir}\n"
+        f"Please verify the image file exists in the workspace."
     )
 
 output_image_path = os.path.join(repo_dir, "handrail_corner_spec.png")
@@ -39,9 +40,9 @@ width, height = img.size
 
 fig, ax = plt.subplots(figsize=(10, 10), dpi=300)
 ax.imshow(img)
-ax.axis("off")
+ax.axis("off")  # Suppress pixel grid
 
-# Colors
+# Style definitions
 cyan = "#00FFFF"
 magenta = "#FF00FF"
 white = "#FFFFFF"
@@ -50,6 +51,7 @@ box_style = dict(boxstyle="round,pad=0.3", facecolor="#1E1E1E", edgecolor=cyan, 
 mag_box_style = dict(boxstyle="round,pad=0.3", facecolor="#1E1E1E", edgecolor=magenta, alpha=0.85, lw=1.2)
 
 def add_callout(text, xy_target, xy_text, color=cyan, style=box_style):
+    """Helper function to render vector arrow callouts and bounding text boxes."""
     ax.annotate(
         text,
         xy=xy_target,
