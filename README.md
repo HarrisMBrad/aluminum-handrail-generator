@@ -40,17 +40,17 @@ A parametric FreeCAD Python macro designed for custom metal fabrication shops. T
 
 ---
 
-## 👨‍🏭 Welding Procedure Specification (WPS) Callouts
+## Summary of Changes
+- **Automated Image Annotation Pipeline:** Added `annotate_frame_corner.py` script to generate high-resolution engineering overlays on physical shop photographs using Matplotlib/Pillow.
+- **Inspection Assets Added:** 
+  - `handrail_corner_spec.png`: 45° top cap miter joint, dual 82° countersunk fastener layout, and post connection specs.
+  - `weld_inspection_spec.png`: AWS D1.2 structural weld joint metrics, bead lengths, and scribe alignment data.
+- **Documentation Updated (`README.md`):** Updated project structure, added side-by-side inspection graphic callouts, synced `/exports/` output listings, and added PowerShell execution instructions.
 
-The macro prints shop-ready parameters for pulsed GMAW / MIG welding on 1/8" structural aluminum:
-
-* **Base Material:** 6061-T6 / 6063-T5 Structural Aluminum
-* **Filler Wire:** ER5356 (0.035" / 0.9 mm)
-* **Shielding Gas:** 100% Argon @ 25–30 CFH
-* **Machine Settings:** 19.5V – 21.5V | 340–390 IPM Wire Feed Speed
-* **Joint Prep:** Stainless steel brush oxide removal + Acetone wipe prior to arc strike. Push technique ONLY (10°–15° angle).
-
----
+## Verification / Testing
+- Verified `annotate_frame_corner.py` execution locally in PowerShell.
+- Confirmed output graphic asset resolutions and accurate label positioning against source photos.
+- Verified FreeCAD macro execution and export file paths.
 
 ## 📄 License
 
