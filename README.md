@@ -1,58 +1,39 @@
-# Aluminum Handrail CAD & Cut List Generator 🛠️
+# Aluminum Handrail CAD, Cut List & QA Generator 🛠️
 
-A parametric FreeCAD Python macro designed for custom metal fabrication shops. This script automatically generates a full 3D CAD assembly of an aluminum handrail with custom pickets, base plates, and countersunk top cap holes, while simultaneously generating a Welding Procedure Specification (WPS) and an automated CNC/robotic tube cut list.
+A parametric FreeCAD Python macro designed for custom aluminum fabrication shops. This script automatically generates a full 3D CAD assembly of an aluminum handrail frame with custom pickets, base plates, and countersunk top cap holes. 
+
+In addition to 3D model generation, it outputs an **AWS D1.2 / D1.2M Structural Aluminum Welding Procedure Specification (WPS)**, an **automated physical joint QA/inspection report**, and automated multi-format CAD deliverables (`.FCStd`, `.step`, and `.dxf`) saved directly to your repository workspace.
 
 ---
 
 ## 🌟 Key Features
 
-- **Full Parametric Control:** Easily adjust overall length, post height, bay spacing, picket count, and material wall thickness directly in Python.
-- **Automated Geometry Creation:**
+- **Full Parametric CAD Generation:** Easily adjust overall length, post height, bay spacing, picket count, and material wall thickness directly in Python.
   - **Posts:** 3" x 3" x 1/8" wall square aluminum tubing.
-  - **Top Cap:** 3" x 2" x 1/8" wall rectangular tubing with 12" O.C. 82° countersunk fastener holes for 3/8" flat-head machine screws.
-  - **Pickets:** 1.5" x 1.5" x 1/8" wall square tubing with parametric spacing across all bays.
-  - **Base Plates:** 3/8" 6061-T6 plate with 1/2" anchor clearance holes.
-- **Shop & Robotic Automation Outputs:**
-  - Prints **Aluminum MIG (GMAW) Welding Specs** directly to the FreeCAD console.
-  - Generates and exports a text-based **Robotic Tube Laser / Cut Cell sequence** (`Aluminum_Handrail_CutList_Robotic.txt`) to your system directory.
+  - **Top Cap:** 3" x 2" x 1/8" wall rectangular tubing with 12" O.C. countersunk fastener holes for flat-head machine screws.
+  - **Pickets:** 1.5" x 1.5" x 1/8" wall square tubing with equal parametric spacing across all bays.
+  - **Base Plates:** 3/8" 6061-T6 aluminum plate with 1/2" anchor clearance holes.
+- **Automated CAD Deliverable Exports:**
+  - Saves native FreeCAD master project (`.FCStd`).
+  - Exports full 3D solid assembly (`.step`) for CAM simulation or client approval.
+  - Exports 2D base plate flat pattern (`.dxf`) with automated module fallback handling (`importDXF` -> `Draft` -> `.step`).
+- **AWS D1.2 Structural Welding & QA Audit:**
+  - Outputs pulsed GMAW/MIG process parameters directly to stdout and the FreeCAD console.
+  - Integrates physical sample inspection data tracking (weld bead length, tube outer dimensions, plate heights, and joint alignment angles).
+- **Robotic & CNC Fabrication Cut Lists:**
+  - Generates text-based shop cut lists (`Aluminum_Handrail_CutList_Robotic.txt`) for tube laser processing and material prep.
 
 ---
 
-## 📐 Default Parameters
+## 📂 Repository Output Structure
 
-| Parameter | Default Value | Description |
-| :--- | :--- | :--- |
-| **Bays** | `3` | Number of upright posts (2 bays total) |
-| **Bay Spacing** | `48.0"` | Center-to-center distance between posts |
-| **Rail Height** | `42.0"` | Total assembly height from floor to top cap |
-| **Toe Clearance** | `6.0"` | Bottom gap under vertical pickets |
-| **Cap Overhang** | `3.0"` | Overhang past the outer faces of outer posts |
-| **Fastener Spacing**| `12.0" O.C.` | Countersunk hole pattern spacing along top cap |
+When executed, the script automatically builds and populates the `/exports/` directory inside your repository:
 
----
-
-## ⚡ Quick Start / How to Run
-
-1. Open **FreeCAD**.
-2. Go to **Macro $\rightarrow$ Macros...** from the top menu.
-3. Click **Create**, name the macro `HandrailBuilder.py`, and paste the script code inside.
-4. Click the **Green Execute Button** ($\triangleright$) or press `Ctrl + F6`.
-5. The 3D model will render instantly in the viewport, and the cut list text file will auto-save to your FreeCAD application directory.
-
----
-
-## 👨‍🏭 Welding Procedure Specification (WPS) Callouts
-
-The macro prints shop-ready parameters for pulsed GMAW / MIG welding on 1/8" structural aluminum:
-
-* **Base Material:** 6061-T6 / 6063-T5 Structural Aluminum
-* **Filler Wire:** ER5356 (0.035" / 0.9 mm)
-* **Shielding Gas:** 100% Argon @ 25–30 CFH
-* **Machine Settings:** 19.5V – 21.5V | 340–390 IPM Wire Feed Speed
-* **Joint Prep:** Stainless steel brush oxide removal + Acetone wipe prior to arc strike. Push technique ONLY (10°–15° angle).
-
----
-
-## 📄 License
-
-Distributed under the MIT License. Feel free to modify and adapt for your own shop workflows.
+```text
+aluminum-handrail-generator/
+├── HandrailBuilder.py
+└── exports/
+    ├── Aluminum_Handrail_Frame.FCStd         # Native FreeCAD Project
+    ├── Aluminum_Handrail_Frame.step          # 3D STEP Solid Assembly
+    ├── Base_Plate_Flat_Pattern.dxf           # 2D Flat Pattern for Laser/Waterjet
+    └── Aluminum_Handrail_CutList_Robotic.txt # Shop Cut List & BOM
