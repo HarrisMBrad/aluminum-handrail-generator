@@ -6,8 +6,8 @@ import sys
 
 def build_handrail_macro():
     """
-    Parametric Aluminum Handrail Builder for FreeCAD 1.1.1
-    Generates 3D Geometry, AWS D1.2 WPS Specs, STEP 3D Assembly, and Base Plate Exports.
+    Parametric Aluminum Handrail & Joint Inspection Builder for FreeCAD
+    Generates 3D Geometry, AWS D1.2 WPS & QA Specs, STEP Assembly, and Base Plate Exports.
     """
     doc_name = "Aluminum_Handrail_Frame"
     if doc_name in App.listDocuments():
@@ -34,6 +34,18 @@ def build_handrail_macro():
     PICKETS_PER_BAY = 3
 
     PLATE_W_IN, PLATE_L_IN, PLATE_THICK_IN = 8.0, 8.0, 0.375
+
+    # =========================================================
+    # METRIC JOINT INSPECTION MEASUREMENTS (Photo Audit Sample)
+    # =========================================================
+    SPECIMEN_PLATE_HEIGHT_MM = 55.0
+    SPECIMEN_BOLT_CC_MM = 40.0
+    SPECIMEN_TUBE_HEIGHT_MM = 25.0
+    SPECIMEN_TUBE_RADIUS_MM = 5.1
+    SPECIMEN_REF_LENGTH_MM = 42.5
+    SPECIMEN_TOP_WELD_LENGTH_MM = 14.2
+    SPECIMEN_VERT_WELD_LENGTH_MM = 18.5
+    SPECIMEN_JOINT_ANGLE_DEG = 90.0
 
     # Computed Lengths
     post_cut_length_in = RAIL_HEIGHT_IN - CAP_H_IN
@@ -125,7 +137,7 @@ def build_handrail_macro():
     step_path = os.path.join(exports_dir, "Aluminum_Handrail_Frame.step")
     Part.export(all_objects, step_path)
 
-    # 2c. Save Base Plate (Tries DXF, falls back safely to STEP)
+    # 2c. Save Base Plate (DXF with STEP fallback)
     dxf_path = os.path.join(exports_dir, "Base_Plate_Flat_Pattern.dxf")
     if first_plate:
         exported = False
@@ -149,15 +161,25 @@ def build_handrail_macro():
             Part.export([first_plate], dxf_path)
 
     # =========================================================
-    # 3. AWS D1.2 WELDING PROCEDURE SPECIFICATION (WPS) CONSOLE
+    # 3. COMBINED AWS D1.2 WPS & QA INSPECTION SPECIFICATION REPORT
     # =========================================================
     wps_report = f"""
 ======================================================================
-  AWS D1.2 / D1.2M STRUCTURAL WELDING CODE - ALUMINUM (WPS SUMMARY)
+  AWS D1.2 / D1.2M STRUCTURAL WELDING CODE - ALUMINUM (WPS & QA REPORT)
 ======================================================================
   Project Name:   Parametric Aluminum Handrail Frame ({NUM_BAYS} Bays)
-  Base Metals:    6061-T6 Tube (0.125") to 6061-T6 Base Plate (0.375")
+  Base Metals:    6061-T6 Tube to 6061-T6 Base Plate
   Standard:       AWS D1.2 / D1.2M Structural Aluminum
+----------------------------------------------------------------------
+  JOINT INSPECTION & METRIC MEASUREMENT DATA (SAMPLE AUDIT)
+  • Plate Section Height:       {SPECIMEN_PLATE_HEIGHT_MM:.1f} mm
+  • Bolt Hole C-to-C Spacing:   {SPECIMEN_BOLT_CC_MM:.1f} mm
+  • Outer Tube Dimension:       {SPECIMEN_TUBE_HEIGHT_MM:.1f} mm
+  • Tube Profile Radius:        R{SPECIMEN_TUBE_RADIUS_MM:.1f} mm
+  • Reference Layout Line:      {SPECIMEN_REF_LENGTH_MM:.1f} mm
+  • Joint Alignment Angle:      {SPECIMEN_JOINT_ANGLE_DEG:.1f}°
+  • Top Weld Bead Length:       {SPECIMEN_TOP_WELD_LENGTH_MM:.1f} mm
+  • Vertical Weld Bead Length:  {SPECIMEN_VERT_WELD_LENGTH_MM:.1f} mm
 ----------------------------------------------------------------------
   GMAW (MIG) PROCESS PARAMETERS
   • Process Type:  GMAW (Pulsed-Spray Transfer / DCEP)
@@ -179,10 +201,7 @@ def build_handrail_macro():
   3. Base Plate Export: {dxf_path}
 ======================================================================
 """
-    # Print directly to Python Console stdout
     print(wps_report)
-    
-    # Also send to FreeCAD Report View
     App.Console.PrintMessage(wps_report)
 
     if Gui.getMainWindow():

@@ -22,18 +22,33 @@ In addition to 3D model generation, it outputs an **AWS D1.2 / D1.2M Structural 
   - Integrates physical sample inspection data tracking (weld bead length, tube outer dimensions, plate heights, and joint alignment angles).
 - **Robotic & CNC Fabrication Cut Lists:**
   - Generates text-based shop cut lists (`Aluminum_Handrail_CutList_Robotic.txt`) for tube laser processing and material prep.
+- **Automated Image Annotation Pipeline:**
+  - Includes `annotate_frame_corner.py` to generate high-resolution engineering overlays on physical shop photos using Matplotlib and Pillow.
+  - Produces spec assets including `handrail_corner_spec.png` (45° top cap miter joint & fastener callouts) and `weld_inspection_spec.png` (AWS D1.2 joint metrics).
 
 ---
 
-## 📂 Repository Output Structure
+## 📐 Default Parameters
 
-When executed, the script automatically builds and populates the `/exports/` directory inside your repository:
+| Parameter | Default Value | Description |
+| :--- | :--- | :--- |
+| **Bays** | `3` | Number of upright posts (2 bays total) |
+| **Bay Spacing** | `48.0"` | Center-to-center distance between posts |
+| **Rail Height** | `42.0"` | Total assembly height from floor to top cap |
+| **Toe Clearance** | `6.0"` | Bottom gap under vertical pickets |
+| **Cap Overhang** | `3.0"` | Overhang past the outer faces of outer posts |
+| **Fastener Spacing**| `12.0" O.C.` | Countersunk hole pattern spacing along top cap |
 
-```text
-aluminum-handrail-generator/
-├── HandrailBuilder.py
-└── exports/
-    ├── Aluminum_Handrail_Frame.FCStd         # Native FreeCAD Project
-    ├── Aluminum_Handrail_Frame.step          # 3D STEP Solid Assembly
-    ├── Base_Plate_Flat_Pattern.dxf           # 2D Flat Pattern for Laser/Waterjet
-    └── Aluminum_Handrail_CutList_Robotic.txt # Shop Cut List & BOM
+---
+
+## ⚡ Quick Start / How to Run
+
+1. Open **FreeCAD**.
+2. Go to **Macro → Macros...** from the top menu.
+3. Click **Create**, name the macro `HandrailBuilder.py`, and paste the script code inside.
+4. Click the **Green Execute Button** (▶) or press `Ctrl + F6`.
+5. The 3D model will render instantly in the viewport, and the cut list text file will auto-save to your FreeCAD application directory.
+
+To run the automated photo annotation tool separately in terminal/PowerShell:
+```bash
+python annotate_frame_corner.py
