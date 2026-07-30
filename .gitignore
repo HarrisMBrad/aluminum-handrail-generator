@@ -1,11 +1,14 @@
-# FreeCAD Backup and Lock Files
+# FreeCAD Backup, Auto-Save, and Lock Files
 *.FCStd1
 *.FCStd2
+*.FCBak
 *.lock
+exports/*.FCStd
 
-# Python Cache
+# Python Cache & Virtual Environments
 __pycache__/
 *.pyc
+.venv/
 
 # OS & Editor Metadata
 .DS_Store
